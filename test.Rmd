@@ -1,0 +1,22 @@
+---
+title: "test"
+author: "Qin"
+date: "2019/10/18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Sharing_test
+
+### ADImagingdata
+  ADImagingdata data is downloaded on the http://adni.loni.usc.edu/. The data includs 254 samples and 157 variables.The variables includs 5 demographic information(age, gender, education, marital status and APOE4), cortical thickness, mean cortical thickness in 150 brain regions,TIV and total cortical thickness.
+  
+```{r}
+library(readxl)
+data <- read_excel("C:/Users/yao/Desktop/Sharing_AngelaZhai/ADImagingdata.xlsx")
+View(data)
+library(knitr)
+kable(data[1:5,2:8],caption="independent variables")
