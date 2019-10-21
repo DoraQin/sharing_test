@@ -1,7 +1,7 @@
 ---
-title: "test"
+title: "ADImagingdata"
 author: "Qin"
-date: "2019/10/18"
+date: "2019/10/21"
 output: html_document
 ---
 
@@ -9,14 +9,43 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Sharing_test
+  ADImagingdata is downloaded on the http://adni.loni.usc.edu/. The data includs 254 samples and 157 variables.The variables includs 5 demographic information(age, gender, education, marital status and APOE4), cortical thickness, mean cortical thickness in 150 brain regions,TIV and total cortical thickness.
 
-### ADImagingdata
-  ADImagingdata data is downloaded on the http://adni.loni.usc.edu/. The data includs 254 samples and 157 variables.The variables includs 5 demographic information(age, gender, education, marital status and APOE4), cortical thickness, mean cortical thickness in 150 brain regions,TIV and total cortical thickness.
-  
 ```{r}
 library(readxl)
-data <- read_excel("C:/Users/yao/Desktop/Sharing_AngelaZhai/ADImagingdata.xlsx")
-View(data)
+data <- read_excel("ADImagingdata.xlsx")
+# View(data)
 library(knitr)
 kable(data[1:5,2:8],caption="independent variables")
+```
+
+```{r}
+library(nycflights13)
+library(dplyr)
+data(flights)
+View(flights)
+filter(flights,month==1,day==1)
+jan1<-filter(flights,month==1,day==1)
+(dec25<-filter(flights,month==12,day==25))
+filter(flights,month==2|month==3)#| is or
+#filter(flights,month=1) =and==
+#is.na(flights) missing value
+arrange(flights,year,month,day)#reorder
+df <- tibble(x = c(5, 2, NA))
+arrange(df,desc(x))#desc,descending order
+select(flights,year,month,day)#selecting variables
+select(flights,year:day)#selecting variables year to day
+select(flights,-(year:day))#selecting variables except year to day
+select(flights,starts_with("m"))#selecting variables starting with m
+select(flights,ends_with("m"))#selecting variables ending with m
+select(flights,contains("m"))#selecting variables containing m
+rename(flights,tail_num=tailnum)
+select(flights,time_hour,air_time,everything())#move to the start of the data frame
+```
+
+#Comparisons
+```{r}
+near(sqrt(2) ^ 2, 2)
+```
+
+
