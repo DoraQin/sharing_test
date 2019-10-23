@@ -1,51 +1,65 @@
 ---
-title: "ADImagingdata"
+title: "ADImaging"
 author: "Qin"
-date: "2019/10/21"
-output: html_document
+date: "2019/10/23"
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-  ADImagingdata is downloaded on the http://adni.loni.usc.edu/. The data includs 254 samples and 157 variables.The variables includs 5 demographic information(age, gender, education, marital status and APOE4), cortical thickness, mean cortical thickness in 150 brain regions,TIV and total cortical thickness.
-
-```{r}
+## Ⅰ.Introduction 
+  ADImagingdata is downloaded on the http://adni.loni.usc.edu/. The data includs 254 samples and 158 variables. All variables includ 5 demographic information(age, gender, education, marital status and APOE4), cortical thickness, mean cortical thickness in 150 brain regions,TIV and total cortical thickness.**The key variable is "ID".**
+  
+## Ⅱ.Data
+```{r echo = FALSE}
+#Import the data
 library(readxl)
-data <- read_excel("ADImagingdata.xlsx")
-# View(data)
+ADNI <- read_excel("ADImaging.xlsx")
+```
+
+###Overview
+```{r  echo = FALSE}
+# View(ADNI)
 library(knitr)
-kable(data[1:5,2:8],caption="independent variables")
+kable(ADNI[1:5,2:8],caption="independent variables")
 ```
 
-```{r}
+### Data Check anf Cleaning
+```{r echo = FALSE}
+colnames(ADNI)
+ADNI[1:6, ]
+```
+
+```{r echo = FALSE}
+#Only focus on demographic information of AD patients, and order by IDs
+#"DX":1-HC/2-EMCI/3-LMCI/AD
+library(tidyverse)
 library(nycflights13)
-library(dplyr)
-data(flights)
-View(flights)
-filter(flights,month==1,day==1)
-jan1<-filter(flights,month==1,day==1)
-(dec25<-filter(flights,month==12,day==25))
-filter(flights,month==2|month==3)#| is or
-#filter(flights,month=1) =and==
-#is.na(flights) missing value
-arrange(flights,year,month,day)#reorder
-df <- tibble(x = c(5, 2, NA))
-arrange(df,desc(x))#desc,descending order
-select(flights,year,month,day)#selecting variables
-select(flights,year:day)#selecting variables year to day
-select(flights,-(year:day))#selecting variables except year to day
-select(flights,starts_with("m"))#selecting variables starting with m
-select(flights,ends_with("m"))#selecting variables ending with m
-select(flights,contains("m"))#selecting variables containing m
-rename(flights,tail_num=tailnum)
-select(flights,time_hour,air_time,everything())#move to the start of the data frame
+ADNI_demographic <-ADNI %>%
+   select(ID, DX, AGE, GENDER, EDUCAT, MARRY) %>%
+   arrange(ID, DX)
 ```
 
-#Comparisons
-```{r}
-near(sqrt(2) ^ 2, 2)
+Question1:What is the gender of the AD patient?
+```{r  echo = FALSE}
+#"GENDER":1-Male/2-Female
+ADNI_demographic_AD <- ADNI_demographic %>%
+   filter(DX == 4)
+
+ADNI_demographic_AD %>%
+   group_by(GENDER) %>%
+   summarise(count=n())
 ```
 
+Question2:What is the marital status  of the AD patient?
+```{r  echo = FALSE}
+#"MARRY":1-Single/2-Married
+ADNI_demographic_AD %>%
+   group_by(MARRY) %>%
+   summarise(count=n())
+```
 
