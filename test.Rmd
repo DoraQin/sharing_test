@@ -11,41 +11,42 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Ⅰ.Introduction 
-  ADImagingdata is downloaded on the http://adni.loni.usc.edu/. The data includs 254 samples and 158 variables. All variables includ 5 demographic information(age, gender, education, marital status and APOE4), cortical thickness, mean cortical thickness in 150 brain regions,TIV and total cortical thickness.**The key variable is "ID".**
+## 1.Introduction 
+  ADImaging dataset is downloaded on the http://adni.loni.usc.edu/. There are 254 samples and 157 variables: 5 demographic information(age, gender, years of education , marital status and APOE4), cortical thickness in 150 brain regions, total incranial volume(TIV) and disease stage(DX).**The key variable is "ID".**
   
-## Ⅱ.Data
-```{r echo = FALSE}
+## 2.Data
+```{r echo = FALSE, warning = FALSE}
 #Import the data
 library(readxl)
+library(knitr)
+library(tidyverse)
+library(nycflights13)
+library(ggplot2)
 ADNI <- read_excel("ADImaging.xlsx")
 ```
 
 ###Overview
-```{r  echo = FALSE}
-# View(ADNI)
-library(knitr)
+```{r echo = FALSE, warning = FALSE}
+View(ADNI)
 kable(ADNI[1:5,2:8],caption="independent variables")
 ```
 
 ### Data Check anf Cleaning
-```{r echo = FALSE}
+```{r echo = FALSE, warning = FALSE}
 colnames(ADNI)
 ADNI[1:6, ]
 ```
 
-```{r echo = FALSE}
+```{r echo = FALSE, warning = FALSE}
 #Only focus on demographic information of AD patients, and order by IDs
 #"DX":1-HC/2-EMCI/3-LMCI/AD
-library(tidyverse)
-library(nycflights13)
 ADNI_demographic <-ADNI %>%
    select(ID, DX, AGE, GENDER, EDUCAT, MARRY) %>%
    arrange(ID, DX)
 ```
 
 Question1:What is the gender of the AD patient?
-```{r  echo = FALSE}
+```{r echo = FALSE, warning = FALSE}
 #"GENDER":1-Male/2-Female
 ADNI_demographic_AD <- ADNI_demographic %>%
    filter(DX == 4)
@@ -56,10 +57,58 @@ ADNI_demographic_AD %>%
 ```
 
 Question2:What is the marital status  of the AD patient?
-```{r  echo = FALSE}
+```{r echo = FALSE, warning = FALSE}
 #"MARRY":1-Single/2-Married
 ADNI_demographic_AD %>%
    group_by(MARRY) %>%
    summarise(count=n())
+```
+
+@@@@@@@@@@@@@@@@@@@@@@@  Miss Zhai, pleace check my practice   @@@@@@@@@@@@@@@@@@@@@@@
+↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+## 3.Data reshape
+
+
+
+
+## 4.Data visualisation
+Work1:To explore the relationship between age and TIV at different stages of disease.
+```{r echo = FALSE, warning = FALSE}
+ggplot(data = ADNI) +
+   geom_point(mapping = aes(x = AGE, y = TIV, color = DX)) 
+#geom_point(mapping = aes(x = AGE, y = TIV, color = "red"))
+#geom_point(mapping = aes(x = AGE, y = TIV, size = DX))
+#geom_point(mapping = aes(x = AGE, y = TIV, alpha = DX))
+#geom_point(mapping = aes(x = AGE, y = TIV, shape = DX))
+ggplot(data = ADNI) +
+   geom_smooth(mapping = aes(x = AGE, y = TIV, color = DX))
+```
+
+Work2:To explore the relationship between years of education (EDUCAT) and the volume of the left perihippocampal gyrus (lG_octemp_medParahip_thickness) at marital status (MARRY) and gender.
+```{r echo = FALSE, warning = FALSE}
+ggplot(data = ADNI) +
+   geom_point(mapping = aes(x = EDUCAT, y = lG_octemp_medParahip_thickness , color = "red")) +
+   geom_smooth(mapping = aes(x = EDUCAT, y = lG_octemp_medParahip_thickness)) + 
+   #facet_wrap(~ DX, nrow = 2)
+   facet_wrap(MARRY ~ GENDER)
+```
+
+Work3:To count the number of people at different disease stages. 
+```{r echo = FALSE, warning = FALSE}
+ggplot(data = ADNI) +
+   geom_bar(mapping = aes(x = DX, fill = DX))
+   #stat_count(mapping = aes(x = DX))
+```
+
+
+Work4:To explore the relationship between years of education (EDUCAT) and different disease stages(DX).
+```{r echo = FALSE, warning = FALSE}
+ggplot(data = ADNI) +
+   stat_summary(
+      mapping = aes(x = DX, y = EDUCAT),
+      fun.ymin = min,
+      fun.ymax = max,
+      fun.y = median
+      )
 ```
 
